@@ -404,7 +404,7 @@ def main():
             hour["alternative"] = {"basis": other, "branch": B[abr], "effective_time": aeff.strftime("%H:%M")}
             warnings.append("기준에 따라 시주가 달라집니다: %s로는 %s시. 출생 지역을 확인하고 두 경우의 차이를 함께 적으세요." % (other, B[abr]))
         if eff.hour >= 23 or (eff.hour == 0):
-            warnings.append("자시(子時) 출생입니다. 밤 11시대 출생은 일주를 다음 날로 넘기는 방식(여기서 사용)과 당일로 두는 야자시 방식이 있습니다.")
+            warnings.append("자시(子時) 출생입니다. 밤 11시대 출생은 일주를 다음 날로 넘기는 방식(여기서 사용)과 당일로 두는 야자시 방식이 있습니다. 야자시로 볼 때의 일주는 yajasi_alternative에 있습니다(0시대 출생이면 해당 없음).")
     else:
         warnings.append("태어난 시간을 몰라 시주 없이 세 기둥으로 계산했습니다. 대운 시작 시점은 정오 기준 근사값입니다.")
 
@@ -485,6 +485,9 @@ def main():
                        "yinyang": "양" if dm % 2 == 0 else "음"},
         "pillars": pillars,
         "hour_basis": {k: v for k, v in hour.items() if k != "branch_idx"} if hour else None,
+        "yajasi_alternative": ({"day": gz(di - 1), "day_reading": gzk(di - 1), "hour": pillars[3]["ganzhi"],
+                                "note": "야자시 방식: 일주는 당일 그대로, 시주는 같다. 일간이 바뀌므로 십성과 대운 해석이 전부 달라진다."}
+                               if has_time and eff.hour >= 23 else None),
         "elements": {EL[i]: counts[i] for i in range(5)},
         "yinyang": {"양": yang, "음": len(pil) * 2 - yang},
         "ten_god_counts": ten_counts,
