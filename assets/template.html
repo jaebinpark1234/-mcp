@@ -1,0 +1,302 @@
+<!--
+  사주 풀이 페이지 본문 뼈대. 이 파일을 복사해 {{ }} 자리를 채운 뒤 scripts/build_page.py로 조립한다.
+  스타일, 글꼴, 마스코트, 전환 버튼 스크립트는 조립할 때 붙는다. 여기에는 <style>이나 <script>를 쓰지 않는다.
+
+  오행 색 클래스: el-wood el-fire el-earth el-metal el-water (한자와 오행 이름에 쓴다)
+  마스코트 표정: #m-happy #m-squint #m-sweat #m-wow (말은 하지 않고 표정만)
+  방 벽 색: section.room 에 w-green / w-purple / w-rose 를 번갈아 붙인다(없으면 베이지)
+  태그: .tag(기본) .tag.y(노랑, 좋은 것·핵심) .tag.dark(검정, 조심·전문 풀이 표시)
+-->
+
+<nav class="nav" aria-label="바로가기">
+  <div class="wrap nav-in">
+    <a href="#sum">요약</a><a href="#chart">원국</a><a href="#elements">오행</a><a href="#self">성격</a><a href="#relations">구조·신살</a><a href="#study">공부·진로</a><a href="#money">돈</a><a href="#family">가족·친구</a><a href="#health">건강</a><a href="#luck">대운</a><a href="#years">올해·내년</a><a href="#tips">개운</a>
+  </div>
+</nav>
+
+<header class="hero">
+  <svg class="bunting" viewBox="0 0 800 60" preserveAspectRatio="none" aria-hidden="true">
+    <path d="M0 6Q400 46 800 6" fill="none" stroke="#2A2420" stroke-width="2.5" vector-effect="non-scaling-stroke"/>
+    <g stroke="#2A2420" stroke-width="2" stroke-linejoin="round" vector-effect="non-scaling-stroke">
+      <path d="M34 10l28 2-12 26Z" fill="#8FA88A"/><path d="M122 17l28 2-12 26Z" fill="#F2CF5B"/><path d="M210 22l28 1-13 26Z" fill="#8E7FA6"/><path d="M298 25l28 1-14 26Z" fill="#F7EFDD"/><path d="M386 26h28l-14 27Z" fill="#C98A7A"/><path d="M474 26l28-1-14 27Z" fill="#F2CF5B"/><path d="M562 23l28-1-15 27Z" fill="#8FA88A"/><path d="M650 19l28-2-16 28Z" fill="#F7EFDD"/><path d="M738 12l28-2-16 28Z" fill="#8E7FA6"/>
+    </g>
+  </svg>
+  <div class="wrap">
+    <div class="sign">
+      <p class="eyebrow">{{庚辰年 · 戊寅月 · 甲子日 · 庚午時}}</p>
+      <h1>{{일간 비유 + 계절, 예: 봄 나무의 사주}}</h1>
+      <ul class="facts">
+        <li class="tag">{{양력 날짜와 요일}}</li><li class="tag">{{음력 날짜}}</li><li class="tag">{{시각 또는 "시간 모름"}}</li><li class="tag">{{성별 · 띠}}</li>
+      </ul>
+    </div>
+    <div class="scene">
+      <span class="spotlight" aria-hidden="true"></span>
+      <svg class="rope" viewBox="0 0 800 40" preserveAspectRatio="none" aria-hidden="true"><path d="M0 4Q400 40 800 4" fill="none" stroke="#2A2420" stroke-width="2.5" vector-effect="non-scaling-stroke"/></svg>
+      <!-- 왼쪽부터 시주, 일주, 월주, 년주. 일주에만 class="pillar me". 시간을 모르면 시주에 class="pillar q"를 주고 한자 자리에 ? 를 넣고 p-read에 "모름". -->
+      <ol class="pillars" aria-label="사주 네 기둥">
+        <li class="pillar" style="--r:-2deg;--drop:12px"><i class="pin"></i><span class="p-role">시주</span><span class="p-ten">{{천간 십성}}</span><b class="hj el-metal">{{庚}}</b><b class="hj el-fire">{{午}}</b><span class="p-ten">{{지지 십성}}</span><span class="p-read">{{경오}}</span></li>
+        <li class="pillar me" style="--r:1deg;--drop:21px"><i class="pin"></i><span class="p-role">일주 · 나</span><span class="p-ten">일간</span><b class="hj el-wood">{{甲}}</b><b class="hj el-water">{{子}}</b><span class="p-ten">{{지지 십성}}</span><span class="p-read">{{갑자}}</span></li>
+        <li class="pillar" style="--r:-1deg;--drop:21px"><i class="pin"></i><span class="p-role">월주</span><span class="p-ten">{{..}}</span><b class="hj el-earth">{{戊}}</b><b class="hj el-wood">{{寅}}</b><span class="p-ten">{{..}}</span><span class="p-read">{{무인}}</span></li>
+        <li class="pillar" style="--r:2deg;--drop:12px"><i class="pin"></i><span class="p-role">년주</span><span class="p-ten">{{..}}</span><b class="hj el-metal">{{庚}}</b><b class="hj el-earth">{{辰}}</b><span class="p-ten">{{..}}</span><span class="p-read">{{경진}}</span></li>
+      </ol>
+    </div>
+    <p class="cap">{{한 줄 자막. 핵심어만 <b>노랑</b>}}</p>
+  </div>
+  <div class="floor">
+    <div class="wrap floor-in">
+      <span class="pool" aria-hidden="true"></span>
+      <span class="tag">{{甲木 · 큰 나무}}</span>
+      <svg class="mas" viewBox="0 0 120 116" role="img" aria-label="마스코트"><use href="#m-happy"/></svg>
+    </div>
+  </div>
+</header>
+
+<main>
+
+<!-- 요약: 쉬운 말 다섯 줄 + 전환 버튼. id와 버튼 id는 그대로 둔다. -->
+<section class="room" id="sum">
+  <div class="wrap">
+    <div class="room-head"><h2 class="board">먼저 요약<small>바쁘면 여기만 읽어도 됩니다</small></h2><svg class="mas" viewBox="0 0 120 116" aria-hidden="true"><use href="#m-happy"/></svg></div>
+    <ol class="sum paper">
+      <li><p><b>{{나는 ○○예요.}}</b> {{한두 문장}}</p></li>
+      <li><p><b>{{가장 두드러진 특징}}</b> {{..}}</p></li>
+      <li><p><b>{{강점}}</b> {{..}}</p></li>
+      <li><p><b>{{가장 필요한 것(용신)}}</b> {{..}}</p></li>
+      <li><p><b>{{운의 큰 흐름}}</b> {{..}}</p></li>
+    </ol>
+    <div class="seg" role="group" aria-label="보기 방식">
+      <button type="button" id="v-all" class="on" aria-pressed="true">전문 + 쉬운 풀이</button>
+      <button type="button" id="v-easy" aria-pressed="false">쉬운 풀이만</button>
+    </div>
+    <p class="paper" style="margin-top:16px;font-size:15px">아래 각 항목은 전문 용어로 쓴 풀이가 먼저 나오고, 바로 밑 노란 상자에 같은 내용을 쉬운 말로 다시 풀었습니다.</p>
+  </div>
+</section>
+
+<!-- 원국: 숫자 태그 4개, 만세력 표, 풀이, 신강약 게이지, 용신 -->
+<section class="room w-green" id="chart">
+  <div class="wrap">
+    <div class="room-head"><h2 class="board">원국 한눈에<small>여덟 글자가 말하는 것</small></h2><svg class="mas" viewBox="0 0 120 116" aria-hidden="true"><use href="#m-happy"/></svg></div>
+    <p class="cap top">{{이 항목의 핵심 한 줄. <b>핵심어</b>}}</p>
+    <div class="pro stack">
+      <div class="pro-label"><span class="tag dark">전문 풀이</span></div>
+      <div class="nums">
+        <div class="num"><b class="el-metal">{{金 3}}</b><span>{{설명}}</span></div>
+        <div class="num"><b class="el-water">{{水 0}}</b><span>{{설명}}</span></div>
+        <div class="num"><b>{{신약}}</b><span>{{설명}}</span></div>
+        <div class="num"><b>{{대운수 4}}</b><span>{{순행 · 5살부터}}</span></div>
+      </div>
+      <div class="screen">
+        <span class="chip"><i>●</i> 만세력 · {{날짜 시각 · 성별}}</span>
+        <!-- 열은 시·일·월·년(시간 모르면 일·월·년). 일간 칸에만 class="hi"와 me-mark. -->
+        <table class="ms">
+          <thead><tr><th></th><th>시주</th><th>일주</th><th>월주</th><th>년주</th></tr></thead>
+          <tbody>
+            <tr><th>천간 십성</th><td>{{..}}</td><td>일간</td><td>{{..}}</td><td>{{..}}</td></tr>
+            <tr class="big"><th>천간</th><td class="el-metal">{{庚}}</td><td class="el-wood hi">{{甲}}<span class="me-mark">나!</span></td><td class="el-earth">{{戊}}</td><td class="el-metal">{{庚}}</td></tr>
+            <tr class="big"><th>지지</th><td class="el-fire">{{午}}</td><td class="el-water">{{子}}</td><td class="el-wood">{{寅}}</td><td class="el-earth">{{辰}}</td></tr>
+            <tr><th>지지 십성</th><td>{{..}}</td><td>{{..}}</td><td>{{..}}</td><td>{{..}}</td></tr>
+            <tr><th>지장간</th><td>{{丙 己 丁}}</td><td>{{..}}</td><td>{{..}}</td><td>{{..}}</td></tr>
+            <tr><th>12운성</th><td>{{..}}</td><td>{{..}}</td><td>{{..}}</td><td>{{..}}</td></tr>
+            <tr><th>납음</th><td>{{..}}</td><td>{{..}}</td><td>{{..}}</td><td>{{..}}</td></tr>
+            <tr><th>신살</th><td>{{..}}</td><td>{{..}}</td><td>{{..}}</td><td>{{..}}</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="paper prose">
+        <p>{{일간, 월령, 통근, 격국을 용어로 설명. 핵심은 <strong>형광펜</strong>.}}</p>
+      </div>
+      <div class="two">
+        <div class="paper">
+          <h3>신강약 판단</h3>
+          <ul class="checks">
+            <li><span class="tag">득령 ✕</span><p>{{..}}</p></li>
+            <li><span class="tag y">득지 ○</span><p>{{..}}</p></li>
+            <li><span class="tag">득세 △</span><p>{{..}}</p></li>
+          </ul>
+          <!-- left 값: 0%(극신약) ~ 50%(중화) ~ 100%(극신강) -->
+          <div class="gauge" role="img" aria-label="{{신약과 신강 사이 위치 설명}}">
+            <div class="gauge-bar"><i style="left:30%"></i></div>
+            <div class="gauge-lab"><span>신약</span><span>중화</span><span>신강</span></div>
+          </div>
+        </div>
+        <div class="paper">
+          <h3>용신과 희기</h3>
+          <ul class="checks">
+            <li><span class="tag y">용신 {{水}}</span><p>{{왜 이 오행인지}}</p></li>
+            <li><span class="tag y">희신 {{木}}</span><p>{{..}}</p></li>
+            <li><span class="tag dark">기신 {{火·土}}</span><p>{{..}}</p></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="easy">
+      <h3><svg class="mas" viewBox="0 0 120 116" aria-hidden="true"><use href="#m-happy"/></svg>쉽게 말하면</h3>
+      <p>{{같은 내용을 한자와 용어 없이. "~예요" 말투. 비유 하나.}}</p>
+      <p>{{두세 문단까지}}</p>
+    </div>
+  </div>
+</section>
+
+<!-- 오행: 칠판 막대그래프. --max 는 가장 큰 개수, --n 은 각 오행 개수. 0개면 bar-track에 zero 클래스. -->
+<section class="room w-purple" id="elements">
+  <div class="wrap">
+    <div class="room-head"><h2 class="board">오행과 조후<small>무엇이 많고 무엇이 필요한가</small></h2><svg class="mas" viewBox="0 0 120 116" aria-hidden="true"><use href="#m-sweat"/></svg></div>
+    <p class="cap top">{{..}}</p>
+    <div class="pro stack">
+      <div class="pro-label"><span class="tag dark">전문 풀이</span></div>
+      <div class="blackboard">
+        <h3>여덟 글자의 오행</h3>
+        <div class="bars" style="--max:3">
+          <div class="bar" style="--c:#9CC08A"><span class="bar-name"><b>木</b>나무</span><span class="bar-track"><i style="--n:1"></i></span><span class="bar-n">1</span></div>
+          <div class="bar" style="--c:#E58A75"><span class="bar-name"><b>火</b>불</span><span class="bar-track"><i style="--n:2"></i></span><span class="bar-n">2</span></div>
+          <div class="bar" style="--c:#E3BC6A"><span class="bar-name"><b>土</b>흙</span><span class="bar-track"><i style="--n:2"></i></span><span class="bar-n">2</span></div>
+          <div class="bar" style="--c:#E8E4DA"><span class="bar-name"><b>金</b>쇠</span><span class="bar-track"><i style="--n:3"></i></span><span class="bar-n">3</span></div>
+          <div class="bar" style="--c:#8FB3DA"><span class="bar-name"><b>水</b>물</span><span class="bar-track zero"></span><span class="bar-n">0</span></div>
+        </div>
+        <p class="chalk-note">{{양 6 · 음 2}}<br>{{십성 묶음별 개수}}</p>
+      </div>
+      <div class="paper prose">
+        <p><strong>조후.</strong> {{계절과 덥고 추움, 필요한 기운}}</p>
+        <p><strong>통관.</strong> {{맞부딪치는 세력이 있으면}}</p>
+      </div>
+    </div>
+    <div class="easy">
+      <h3><svg class="mas" viewBox="0 0 120 116" aria-hidden="true"><use href="#m-sweat"/></svg>쉽게 말하면</h3>
+      <p>{{..}}</p>
+      <!-- 쉬운 풀이 안의 목록은 이 모양 -->
+      <ul>
+        <li><b>{{쇠(셋)}}</b>{{는 ..}}</li>
+        <li><b>{{물(숨음)}}</b>{{은 ..}}</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- 성격·구조·공부·돈·가족·건강: 같은 틀. 전문 풀이는 ul.pts.paper(태그 + 문단) 목록이 기본. -->
+<section class="room w-green" id="self">
+  <div class="wrap">
+    <div class="room-head"><h2 class="board">일주 {{甲子}}와 성격<small>{{일주 비유}}</small></h2><svg class="mas" viewBox="0 0 120 116" aria-hidden="true"><use href="#m-happy"/></svg></div>
+    <p class="cap top">{{..}}</p>
+    <div class="pro stack">
+      <div class="pro-label"><span class="tag dark">전문 풀이</span></div>
+      <ul class="pts paper">
+        <li><span class="tag y">{{근거가 되는 글자나 구조}}</span><p>{{풀이}}</p></li>
+        <li><span class="tag">{{..}}</span><p>{{..}}</p></li>
+      </ul>
+    </div>
+    <div class="easy">
+      <h3><svg class="mas" viewBox="0 0 120 116" aria-hidden="true"><use href="#m-happy"/></svg>쉽게 말하면</h3>
+      <p>{{..}}</p>
+    </div>
+  </div>
+</section>
+
+<section class="room w-rose" id="relations">
+  <div class="wrap">
+    <div class="room-head"><h2 class="board">사주의 구조<small>합 · 충 · 공망 · 신살</small></h2><svg class="mas" viewBox="0 0 120 116" aria-hidden="true"><use href="#m-wow"/></svg></div>
+    <p class="cap top">{{..}}</p>
+    <div class="pro stack">
+      <div class="pro-label"><span class="tag dark">전문 풀이</span></div>
+      <!-- 기운이 흐르는 길: 태그와 화살표 -->
+      <div class="paper">
+        <h3>기운이 흐르는 길</h3>
+        <div class="flow" aria-label="오행 흐름">
+          <span class="tag"><span class="el-wood">{{甲 나무}}</span></span><i>→</i>
+          <span class="tag"><span class="el-fire">{{午 불}}</span></span><i>→</i>
+          <span class="tag y">{{..}}</span>
+        </div>
+        <p style="margin-top:12px">{{설명}}</p>
+      </div>
+      <ul class="pts paper">
+        <li><span class="tag y">{{구조 이름}}</span><p>{{..}}</p></li>
+        <li><span class="tag">{{합·충 등}}</span><p>{{..}}</p></li>
+        <li><span class="tag">공망 {{○·○}}</span><p>{{..}}</p></li>
+      </ul>
+      <!-- 신살은 포스트잇 -->
+      <div class="notes">
+        <div class="note" style="--r:-1.5deg"><b>{{천을귀인}}</b><small>{{년지 丑}}</small>{{한두 문장}}</div>
+        <div class="note" style="--r:1deg"><b>{{..}}</b><small>{{..}}</small>{{..}}</div>
+      </div>
+    </div>
+    <div class="easy">
+      <h3><svg class="mas" viewBox="0 0 120 116" aria-hidden="true"><use href="#m-wow"/></svg>쉽게 말하면</h3>
+      <p>{{..}}</p>
+    </div>
+  </div>
+</section>
+
+<!-- #study #money #family #health 는 #self 와 같은 틀로 만든다. 벽 색만 번갈아. 건강 전문 풀이 끝에는 아래 한 줄을 넣는다. -->
+<!-- <p class="paper" style="font-size:14.5px">사주로 보는 체질 경향입니다. 증상이 있을 때는 병원 진료가 먼저입니다.</p> -->
+
+<!-- 대운: 세로 목록(지금 대운에 class="now") + 자세한 카드 몇 장 -->
+<section class="room" id="luck">
+  <div class="wrap">
+    <div class="room-head"><h2 class="board">대운<small>10년마다 바뀌는 계절</small></h2><svg class="mas" viewBox="0 0 120 116" aria-hidden="true"><use href="#m-wow"/></svg></div>
+    <p class="cap top">{{..}}</p>
+    <div class="pro stack">
+      <div class="pro-label"><span class="tag dark">전문 풀이</span></div>
+      <div class="paper prose"><p>{{순행·역행 이유, 절기까지 날수 ÷ 3 = 대운수, 실제 교운 시점. 나이는 한국 나이.}}</p></div>
+      <ol class="dwv" aria-label="대운 흐름">
+        <li class="now"><span class="dwv-age">{{5~14살 지금}}</span><b class="dwv-h"><span class="el-earth">{{己}}</span><span class="el-wood">{{卯}}</span></b><span>{{십성 · 한 줄}}</span></li>
+        <li><span class="dwv-age">{{15~24살}}</span><b class="dwv-h"><span class="el-metal">{{庚}}</span><span class="el-earth">{{辰}}</span></b><span>{{..}}</span></li>
+      </ol>
+      <div class="era">
+        <div class="paper"><div class="era-head"><b><span class="el-earth">{{己}}</span><span class="el-wood">{{卯}}</span></b><span class="tag y">{{5~14살 · 지금 · 2004~2013}}</span></div><p>{{자세한 풀이}}</p></div>
+        <div class="paper"><div class="era-head"><b>{{..}}</b><span class="tag">{{..}}</span></div><p>{{..}}</p></div>
+      </div>
+    </div>
+    <div class="easy">
+      <h3><svg class="mas" viewBox="0 0 120 116" aria-hidden="true"><use href="#m-wow"/></svg>쉽게 말하면</h3>
+      <p>대운은 10년마다 바뀌는 인생의 계절이에요.</p>
+      <ul><li><b>{{지금(○~○살)}}</b> {{..}}</li></ul>
+    </div>
+  </div>
+</section>
+
+<!-- 세운: 해마다 카드 한 장. 올해에 class="yr cur". -->
+<section class="room w-purple" id="years">
+  <div class="wrap">
+    <div class="room-head"><h2 class="board">올해와 앞으로<small>세운 {{2026 ~ 2032}}</small></h2><svg class="mas" viewBox="0 0 120 116" aria-hidden="true"><use href="#m-sweat"/></svg></div>
+    <p class="cap top">{{..}}</p>
+    <div class="pro stack">
+      <div class="pro-label"><span class="tag dark">전문 풀이</span></div>
+      <div class="paper yr cur"><div class="yr-n">{{2026}}<small><span class="el-fire">{{丙午}}</span></small></div><div><h3>{{식신 · 상관}}</h3><p><span class="tag y">{{27살 · 올해}}</span></p><p style="margin-top:8px">{{풀이}}</p></div></div>
+      <div class="paper yr"><div class="yr-n">{{2027}}<small><span class="el-fire">{{丁}}</span><span class="el-earth">{{未}}</span></small></div><div><h3>{{..}}</h3><p><span class="tag y">{{28살}}</span></p><p style="margin-top:8px">{{..}}</p></div></div>
+    </div>
+    <div class="easy">
+      <h3><svg class="mas" viewBox="0 0 120 116" aria-hidden="true"><use href="#m-sweat"/></svg>쉽게 말하면</h3>
+      <ul><li><b>{{2026년(올해)}}</b> {{..}}</li></ul>
+    </div>
+  </div>
+</section>
+
+<!-- 개운법: 포스트잇 9장 안팎. 이 항목은 쉬운 말로만 쓴다(전문/쉬운 구분 없음). -->
+<section class="room w-green" id="tips">
+  <div class="wrap">
+    <div class="room-head"><h2 class="board">개운법<small>{{용신과 희신을 가까이}}</small></h2><svg class="mas" viewBox="0 0 120 116" aria-hidden="true"><use href="#m-happy"/></svg></div>
+    <p class="cap top">{{..}}</p>
+    <div class="notes">
+      <div class="note" style="--r:-1deg"><b>색</b>{{..}}</div>
+      <div class="note" style="--r:1deg"><b>방향</b>{{..}}</div>
+      <div class="note" style="--r:-.5deg"><b>숫자</b>{{..}}</div>
+      <div class="note" style="--r:1.5deg"><b>몸</b>{{..}}</div>
+      <div class="note" style="--r:-1.5deg"><b>사람</b>{{..}}</div>
+      <div class="note" style="--r:.5deg"><b>마음</b>{{..}}</div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer class="foot" id="note">
+  <div class="wrap">
+    <div class="paper">
+      <h3>계산 기준</h3>
+      <p><b>날짜</b> · {{양력 = 음력}}</p>
+      <p><b>절기</b> · {{앞뒤 절기와 시각(약). 그래서 무슨 월인지.}}</p>
+      <p><b>대운</b> · {{순행/역행, 날수 ÷ 3, 대운수. 나이는 한국 나이.}}</p>
+      <p><b>태어난 시</b> · {{어느 기준으로 무슨 시인지. 경계 경고가 있으면 다른 경우에 달라지는 점까지.}}</p>
+      <p>사주는 과학이 아니라 오래된 해석의 틀입니다. 재미와 참고로 읽으세요.</p>
+    </div>
+  </div>
+</footer>
