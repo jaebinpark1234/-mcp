@@ -2,3 +2,5 @@
 __pycache__/
 *.pyc
 saju.zip
+tools/saju_install.html
+tools/saju_install_cmd.sh
