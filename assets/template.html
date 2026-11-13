@@ -6,6 +6,9 @@
   마스코트 표정: #m-happy #m-squint #m-sweat #m-wow (말은 하지 않고 표정만)
   방 벽 색: section.room 에 w-green / w-purple / w-rose 를 번갈아 붙인다(없으면 베이지)
   태그: .tag(기본) .tag.y(노랑, 좋은 것·핵심) .tag.dark(검정, 조심·전문 풀이 표시)
+
+  {{ }} 안의 한자·나이·연도는 2000년생을 가정한 모양 예시일 뿐이다. 실제 값은 전부 계산 결과(JSON)에서 가져온다.
+  성인이면 바로가기와 팻말의 "공부·진로"를 "일·적성"으로, "가족·친구"를 "가족·인연"으로 바꾼다. id는 그대로.
 -->
 
 <nav class="nav" aria-label="바로가기">
@@ -247,11 +250,11 @@
       <div class="pro-label"><span class="tag dark">전문 풀이</span></div>
       <div class="paper prose"><p>{{순행·역행 이유, 절기까지 날수 ÷ 3 = 대운수, 실제 교운 시점. 나이는 한국 나이.}}</p></div>
       <ol class="dwv" aria-label="대운 흐름">
-        <li class="now"><span class="dwv-age">{{5~14살 지금}}</span><b class="dwv-h"><span class="el-earth">{{己}}</span><span class="el-wood">{{卯}}</span></b><span>{{십성 · 한 줄}}</span></li>
-        <li><span class="dwv-age">{{15~24살}}</span><b class="dwv-h"><span class="el-metal">{{庚}}</span><span class="el-earth">{{辰}}</span></b><span>{{..}}</span></li>
+        <li class="now"><span class="dwv-age">{{25~34살 지금}}</span><b class="dwv-h"><span class="el-earth">{{己}}</span><span class="el-wood">{{卯}}</span></b><span>{{십성 · 한 줄}}</span></li>
+        <li><span class="dwv-age">{{35~44살}}</span><b class="dwv-h"><span class="el-metal">{{庚}}</span><span class="el-earth">{{辰}}</span></b><span>{{..}}</span></li>
       </ol>
       <div class="era">
-        <div class="paper"><div class="era-head"><b><span class="el-earth">{{己}}</span><span class="el-wood">{{卯}}</span></b><span class="tag y">{{5~14살 · 지금 · 2004~2013}}</span></div><p>{{자세한 풀이}}</p></div>
+        <div class="paper"><div class="era-head"><b><span class="el-earth">{{己}}</span><span class="el-wood">{{卯}}</span></b><span class="tag y">{{25~34살 · 지금 · 2024~2033}}</span></div><p>{{자세한 풀이}}</p></div>
         <div class="paper"><div class="era-head"><b>{{..}}</b><span class="tag">{{..}}</span></div><p>{{..}}</p></div>
       </div>
     </div>

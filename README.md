@@ -10,17 +10,11 @@
 
 ### Claude Code
 
-```bash
-git clone https://github.com/jaebinpark1234/saju-skill ~/.claude/skills/saju
-```
-
-Claude Code를 다시 열면 됩니다. Python 3.8 이상이 있어야 합니다(추가 설치 없음).
+받은 설치 안내 페이지에서 "설치 명령 복사"를 눌러 터미널에 붙여넣으면 됩니다. 직접 넣으려면 이 폴더를 통째로 `~/.claude/skills/saju`에 두고 Claude Code를 다시 엽니다. Python 3.8 이상이 있어야 합니다(추가 설치 없음).
 
 ### claude.ai (웹·앱)
 
-1. 이 저장소의 [Releases](https://github.com/jaebinpark1234/saju-skill/releases)에서 `saju.zip`을 받습니다.
-2. claude.ai **설정 → 기능(Capabilities) → 스킬**에서 zip 파일을 올립니다.
-3. 코드 실행 기능이 켜져 있어야 계산 스크립트가 돌아갑니다.
+이 폴더를 zip으로 묶어 **설정 → 기능(Capabilities) → 스킬**에 올립니다. 코드 실행 기능이 켜져 있어야 계산 스크립트가 돌아갑니다.
 
 ## 쓰는 법
 
