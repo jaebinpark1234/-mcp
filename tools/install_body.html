@@ -13,6 +13,8 @@
 details{margin-top:12px}
 summary{font:700 18px/1.4 var(--f-hand);cursor:pointer;color:var(--chalk)}
 .paper summary{color:var(--ink)}
+.blackboard h3{color:var(--chalk);font-size:21px}
+.paper a{color:var(--water);word-break:break-all}
 textarea{display:block;width:100%;margin-top:8px;font:12px/1.4 ui-monospace,Menlo,Consolas,monospace;color:var(--ink);background:var(--paper);border:2px solid var(--ink);border-radius:6px;padding:8px}
 .say{font:700 21px/1.45 var(--f-hand);padding:10px 14px;background:var(--paper-2);border:2px solid var(--ink);border-radius:14px 16px 14px 4px;display:inline-block;margin-top:6px}
 .files{font:13.5px/1.7 ui-monospace,Menlo,Consolas,monospace;overflow-x:auto;white-space:pre;margin-top:8px}
@@ -51,14 +53,17 @@ h3 .tag{vertical-align:middle;margin-left:6px;font-size:16px}
     <div class="room-head"><h2 class="board">설치 · 맥 / 리눅스<small>터미널에 붙여넣기 한 번</small></h2><svg class="mas" viewBox="0 0 120 116" aria-hidden="true"><use href="#m-happy"/></svg></div>
     <ol class="sum paper">
       <li><p><b>터미널을 엽니다.</b> 맥은 Spotlight(⌘+스페이스)에서 "터미널"을 찾으면 됩니다.</p></li>
-      <li><p><b>아래 노란 버튼을 눌러 명령을 복사합니다.</b> 명령이 길어서 화면에는 줄여서 보여 줍니다.</p></li>
-      <li><p><b>터미널에 붙여넣고 엔터.</b> "설치 완료"가 나오면 끝입니다.</p></li>
+      <li><p><b>아래 명령을 복사해 붙여넣고 엔터.</b></p></li>
       <li><p><b>Claude Code를 새로 엽니다.</b> 열려 있었다면 껐다 켭니다.</p></li>
     </ol>
     <div class="blackboard" style="margin-top:20px">
-      <code class="cmd">mkdir -p ~/.claude/skills &amp;&amp; echo '<em>…스킬 파일 __KB__KB…</em>' | base64 --decode | tar -xz -C ~/.claude/skills</code>
-      <button type="button" class="copy" id="copy-mac" data-copy="mac">설치 명령 복사</button>
-      <details><summary>전체 명령 보기</summary><textarea id="ta-mac" readonly rows="6" aria-label="맥과 리눅스용 전체 설치 명령"></textarea></details>
+      <code class="cmd">git clone <em>__REPO__</em> ~/.claude/skills/saju</code>
+      <button type="button" class="copy" data-copy="mac">설치 명령 복사</button>
+    </div>
+    <div class="blackboard" style="margin-top:16px">
+      <h3>git이 없다고 나오면</h3>
+      <code class="cmd">mkdir -p ~/.claude/skills/saju &amp;&amp; curl -L <em>__REPO__</em>/archive/refs/heads/main.tar.gz | tar -xz --strip-components=1 -C ~/.claude/skills/saju</code>
+      <button type="button" class="copy" data-copy="curl">이 명령 복사</button>
     </div>
   </div>
 </section>
@@ -68,15 +73,13 @@ h3 .tag{vertical-align:middle;margin-left:6px;font-size:16px}
     <div class="room-head"><h2 class="board">설치 · 윈도우<small>PowerShell에 붙여넣기</small></h2><svg class="mas" viewBox="0 0 120 116" aria-hidden="true"><use href="#m-squint"/></svg></div>
     <ol class="sum paper">
       <li><p><b>PowerShell을 엽니다.</b> 시작 메뉴에서 "PowerShell"을 찾으면 됩니다.</p></li>
-      <li><p><b>아래 버튼으로 복사해 붙여넣고 엔터.</b></p></li>
+      <li><p><b>아래 명령을 복사해 붙여넣고 엔터.</b> git이 깔려 있어야 합니다.</p></li>
       <li><p><b>Claude Code를 새로 엽니다.</b></p></li>
     </ol>
     <div class="blackboard" style="margin-top:20px">
-      <code class="cmd">$b='<em>…스킬 파일…</em>'; [IO.File]::WriteAllBytes("$env:TEMP\saju.tgz",[Convert]::FromBase64String($b)); tar -xzf "$env:TEMP\saju.tgz" -C "$HOME\.claude\skills"</code>
-      <button type="button" class="copy" id="copy-win" data-copy="win">윈도우용 명령 복사</button>
-      <details><summary>전체 명령 보기</summary><textarea id="ta-win" readonly rows="6" aria-label="윈도우용 전체 설치 명령"></textarea></details>
+      <code class="cmd">git clone <em>__REPO__</em> "$HOME\.claude\skills\saju"</code>
+      <button type="button" class="copy" data-copy="win">윈도우용 명령 복사</button>
     </div>
-    <p class="paper" style="margin-top:16px;font-size:15px">윈도우용 명령은 실제 윈도우에서 돌려 보지 못했습니다. 안 되면 WSL이나 Git Bash에서 위의 맥 / 리눅스 명령을 쓰세요.</p>
   </div>
 </section>
 
@@ -117,9 +120,15 @@ h3 .tag{vertical-align:middle;margin-left:6px;font-size:16px}
     <div class="room-head"><h2 class="board">명령이 하는 일<small>붙여넣기 전에 확인</small></h2><svg class="mas" viewBox="0 0 120 116" aria-hidden="true"><use href="#m-happy"/></svg></div>
     <div class="stack">
       <div class="paper prose">
-        <p>명령 안의 긴 글자는 스킬 파일 __COUNT__개를 압축해 글자로 바꾼 것입니다. 명령은 이것을 풀어서 <strong>~/.claude/skills/saju</strong> 폴더에 넣습니다. 그 폴더 밖은 건드리지 않고, 인터넷에서 아무것도 내려받지 않습니다.</p>
+        <p>명령은 깃허브 저장소 <a href="__REPO__" target="_blank" rel="noopener">__REPO__</a> 의 파일 __COUNT__개 남짓을 <strong>~/.claude/skills/saju</strong> 폴더로 내려받습니다. 그 폴더 밖은 건드리지 않습니다. 저장소에서 내용을 먼저 읽어 볼 수 있습니다.</p>
         <div class="files">__FILES__</div>
-        <p style="margin-top:10px">지우려면 <b>rm -rf ~/.claude/skills/saju</b> 한 줄이면 됩니다.</p>
+        <p style="margin-top:10px">새 버전은 <b>git -C ~/.claude/skills/saju pull</b>, 지우려면 <b>rm -rf ~/.claude/skills/saju</b> 한 줄이면 됩니다.</p>
+      </div>
+      <div class="paper">
+        <h3>깃허브가 안 열릴 때 <span class="tag">맥 / 리눅스</span></h3>
+        <p>스킬 파일을 통째로 담은 명령입니다(__KB__KB). 인터넷 없이도 설치됩니다.</p>
+        <button type="button" class="copy" data-copy="offline">오프라인 설치 명령 복사</button>
+        <details><summary>전체 명령 보기</summary><textarea id="ta-offline" readonly rows="6" aria-label="오프라인 설치 명령"></textarea></details>
       </div>
       <div class="paper" style="font-size:15px">
         <p>절기 시각은 약 ±15분 오차가 있습니다. 절기 바로 앞뒤나 시(時)의 경계에 태어났다면 스킬이 경고를 띄웁니다. 사주는 과학이 아니라 오래된 해석의 틀입니다. 재미와 참고로 보세요.</p>
@@ -133,18 +142,22 @@ h3 .tag{vertical-align:middle;margin-left:6px;font-size:16px}
 <script id="b64" type="text/plain">__B64__</script>
 <script>
 (function(){
-  var b=document.getElementById('b64').textContent.trim();
+  var b=document.getElementById('b64').textContent.trim(),R='__REPO__';
   var CMD={
-    mac:"mkdir -p ~/.claude/skills && echo '"+b+"' | base64 --decode | tar -xz -C ~/.claude/skills && echo '설치 완료: ~/.claude/skills/saju'",
-    win:"$b='"+b+"'; $t=\"$env:TEMP\\saju.tgz\"; [IO.File]::WriteAllBytes($t,[Convert]::FromBase64String($b)); New-Item -ItemType Directory -Force \"$HOME\\.claude\\skills\" | Out-Null; tar -xzf $t -C \"$HOME\\.claude\\skills\"; Write-Output '설치 완료'"
+    mac:"git clone "+R+" ~/.claude/skills/saju",
+    win:"git clone "+R+" \"$HOME\\.claude\\skills\\saju\"",
+    curl:"mkdir -p ~/.claude/skills/saju && curl -L "+R+"/archive/refs/heads/main.tar.gz | tar -xz --strip-components=1 -C ~/.claude/skills/saju",
+    offline:"mkdir -p ~/.claude/skills && echo '"+b+"' | base64 --decode | tar -xz -C ~/.claude/skills && echo '설치 완료: ~/.claude/skills/saju'"
   };
-  ['mac','win'].forEach(function(k){
-    var ta=document.getElementById('ta-'+k),btn=document.getElementById('copy-'+k);
-    ta.value=CMD[k];
-    var label=btn.textContent;
+  Array.prototype.forEach.call(document.querySelectorAll('[data-copy]'),function(btn){
+    var k=btn.getAttribute('data-copy'),ta=document.getElementById('ta-'+k),label=btn.textContent;
+    if(ta)ta.value=CMD[k];
     function ok(){btn.textContent='복사됨! 터미널에 붙여넣으세요';btn.classList.add('done');setTimeout(function(){btn.textContent=label;btn.classList.remove('done')},2500)}
     function fallback(){
-      ta.parentNode.open=true;ta.focus();ta.select();
+      var el=ta;
+      if(!el){el=document.createElement('textarea');el.value=CMD[k];el.setAttribute('readonly','');el.rows=3;btn.parentNode.appendChild(el)}
+      else{ta.parentNode.open=true}
+      el.focus();el.select();
       var done=false;try{done=document.execCommand('copy')}catch(e){}
       if(done){ok()}else{btn.textContent='아래 칸을 전체 선택해 복사하세요'}
     }

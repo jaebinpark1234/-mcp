@@ -37,7 +37,7 @@ def rd(p):
         return fh.read()
 
 body = rd(os.path.join(HERE, "install_body.html"))
-for k, v in (("__B64__", b64), ("__FILES__", listing), ("__COUNT__", str(len(files))),
+for k, v in (("__REPO__", "https://github.com/jaebinpark1234/-mcp"), ("__B64__", b64), ("__FILES__", listing), ("__COUNT__", str(len(files))),
              ("__KB__", str(round(len(b64) / 1024))), ("__VERSION__", datetime.date.today().isoformat() + " · " + ver)):
     assert k in body, k
     body = body.replace(k, v)

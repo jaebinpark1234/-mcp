@@ -10,11 +10,29 @@
 
 ### Claude Code
 
-받은 설치 안내 페이지에서 "설치 명령 복사"를 눌러 터미널에 붙여넣으면 됩니다. 직접 넣으려면 이 폴더를 통째로 `~/.claude/skills/saju`에 두고 Claude Code를 다시 엽니다. Python 3.8 이상이 있어야 합니다(추가 설치 없음).
+맥 / 리눅스 터미널:
+
+```bash
+git clone https://github.com/jaebinpark1234/-mcp ~/.claude/skills/saju
+```
+
+윈도우 PowerShell:
+
+```powershell
+git clone https://github.com/jaebinpark1234/-mcp "$HOME\.claude\skills\saju"
+```
+
+git이 없으면(맥 / 리눅스):
+
+```bash
+mkdir -p ~/.claude/skills/saju && curl -L https://github.com/jaebinpark1234/-mcp/archive/refs/heads/main.tar.gz | tar -xz --strip-components=1 -C ~/.claude/skills/saju
+```
+
+설치한 뒤 Claude Code를 새로 엽니다. Python 3.8 이상이 있어야 합니다(추가 설치 없음). 새 버전을 받으려면 `git -C ~/.claude/skills/saju pull`.
 
 ### claude.ai (웹·앱)
 
-이 폴더를 zip으로 묶어 **설정 → 기능(Capabilities) → 스킬**에 올립니다. 코드 실행 기능이 켜져 있어야 계산 스크립트가 돌아갑니다.
+저장소의 **Code → Download ZIP**으로 받은 파일을 **설정 → 기능(Capabilities) → 스킬**에 올립니다. 코드 실행 기능이 켜져 있어야 계산 스크립트가 돌아갑니다.
 
 ## 쓰는 법
 
@@ -48,7 +66,8 @@ saju/
 ├── scripts/saju_calc.py         만세력 계산기
 ├── scripts/build_page.py        본문에 스타일·마스코트를 붙여 페이지 완성
 ├── references/interpretation.md 해석 안내와 참고표
-└── assets/                      페이지 뼈대, 스타일, 오행별 마스코트 5종
+├── assets/                      페이지 뼈대, 스타일, 오행별 마스코트 5종
+└── tools/                       설치 안내 페이지를 만드는 도구(스킬 동작에는 쓰이지 않음)
 ```
 
 계산기만 따로 써도 됩니다.
