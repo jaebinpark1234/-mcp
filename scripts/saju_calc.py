@@ -249,6 +249,38 @@ def group_of(br):
     return None
 
 
+SAMHAP_EL = {"申子辰": "水", "寅午戌": "火", "巳酉丑": "金", "亥卯未": "木"}
+
+
+def chart_rel(label, st, br, nat_st, nat_br, names, skip_samhap=False):
+    """한 글자쌍(st, br)이 원국과 만드는 합·충·형·파·해·삼합. label은 '대운'/'세운'."""
+    out = []
+    for i, ns in enumerate(nat_st):
+        for kind, lst in STEM_PAIRS.items():
+            if st + ns in lst or ns + st in lst:
+                out.append({"type": "천간" + kind, "where": "%s %s – %s간 %s" % (label, st, names[i], ns)})
+    for i, nb in enumerate(nat_br):
+        where = "%s %s – %s지 %s" % (label, br, names[i], nb)
+        for kind, lst in PAIRS.items():
+            if br + nb in lst or nb + br in lst:
+                out.append({"type": kind, "where": where})
+        if br == nb and br in "辰午酉亥":
+            out.append({"type": "자형", "where": where})
+    if not skip_samhap:
+        for g in SAMHAP:
+            if br not in g:
+                continue
+            e = SAMHAP_EL[g]
+            if all(c in nat_br or c == br for c in g) and not all(c in nat_br for c in g):
+                src = ["%s지 %s" % (names[nat_br.index(c)], c) for c in g if c != br]
+                out.append({"type": "삼합 완성(%s국)" % e, "where": "%s %s + %s" % (label, br, "·".join(src))})
+            else:
+                for i, nb in enumerate(nat_br):
+                    if nb != br and nb in g:
+                        out.append({"type": "삼합 반합(%s국)" % e, "where": "%s %s – %s지 %s" % (label, br, names[i], nb)})
+    return out
+
+
 def analyze(pillars, names):
     """pillars: [(stem_idx, branch_idx)] 년·월·일·(시) 순서."""
     dm = pillars[2][0]
@@ -320,7 +352,7 @@ def analyze(pillars, names):
                 rel.append({"type": "자형", "where": where, "adjacent": adj})
             g = group_of(a)
             if a != b and g == group_of(b):
-                rel.append({"type": "삼합 반합(%s국)" % EL[{"申子辰": 4, "寅午戌": 1, "巳酉丑": 3, "亥卯未": 0}[g]], "where": where, "adjacent": adj})
+                rel.append({"type": "삼합 반합(%s국)" % EL["木火土金水".index(SAMHAP_EL[g])], "where": where, "adjacent": adj})
     for g, e in (("申子辰", "水"), ("寅午戌", "火"), ("巳酉丑", "金"), ("亥卯未", "木")):
         if all(c in brs for c in g):
             rel.append({"type": "삼합 완성(%s국)" % e, "where": g, "adjacent": ""})
@@ -452,6 +484,19 @@ def main():
                 ten_counts[t] = ten_counts.get(t, 0) + 1
 
     sinsal, rel, void, void_hit = analyze(pil, names)
+    nat_st = [S[p[0]] for p in pil]
+    nat_br = [B[p[1]] for p in pil]
+    tg = {"비겁": ["비견", "겁재"], "식상": ["식신", "상관"], "재성": ["편재", "정재"], "관성": ["편관", "정관"], "인성": ["편인", "정인"]}
+    ten_groups = {k: sum(ten_counts.get(t, 0) for t in v) for k, v in tg.items()}
+    ly_leap = None  # 동지~동지 구간에서 중기 없는 첫 달이 윤달. 윤11·12월은 그 해 동지 뒤 구간에 걸린다.
+    for base in (ly - 1, ly):
+        ka, kb = dongji_k(base), dongji_k(base + 1)
+        if kb - ka == 13:
+            n = next(((10 + j - 1) % 12 + 1 for j in range(1, 13) if not has_zhongqi(ka + j)), None)
+            if n and (n <= 10) == (base == ly - 1):
+                ly_leap = n
+    if a.lunar and not a.leap and m == ly_leap:
+        warnings.append("이 해에는 윤%d월이 있습니다. 평달인지 윤달인지 확인하세요." % ly_leap)
 
     # 대운
     forward = ((yi % 10) % 2 == 0) == (a.gender == "m")
@@ -462,18 +507,38 @@ def main():
     for k in range(1, 9):
         idx = (mi + k) % 60 if forward else (mi - k) % 60
         st_y = start.year + 10 * (k - 1)
+        idx_s, idx_b = S[idx % 10], B[idx % 12]
         daeun.append({"ganzhi": gz(idx), "reading": gzk(idx), "stem_ten_god": ten_god(dm, idx % 10),
                       "branch_ten_god": ten_god(dm, S.index(HIDDEN[B[idx % 12]][-1])),
                       "twelve_stage": twelve(dm, idx % 12),
                       "start_year": st_y, "end_year": st_y + 9,
-                      "korean_age_start": st_y - sd.year + 1, "korean_age_end": st_y - sd.year + 10})
+                      "korean_age_start": st_y - sd.year + 1, "korean_age_end": st_y - sd.year + 10,
+                      "with_chart": chart_rel("대운", idx_s, idx_b, nat_st, nat_br, names)})
     seun = []
     for yy in range(a.from_year, a.from_year + a.years):
         idx = (yy - 4) % 60
+        ss, sb = S[idx % 10], B[idx % 12]
+        cur = next((x for x in daeun if x["start_year"] <= yy <= x["end_year"]), None)
+        wc = chart_rel("세운", ss, sb, nat_st, nat_br, names)
+        wd = []
+        if cur:
+            cs, cb = cur["ganzhi"]
+            for kind, lst in STEM_PAIRS.items():
+                if ss + cs in lst or cs + ss in lst:
+                    wd.append({"type": "천간" + kind, "where": "세운 %s – 대운 %s" % (ss, cs)})
+            for kind, lst in PAIRS.items():
+                if sb + cb in lst or cb + sb in lst:
+                    wd.append({"type": kind, "where": "세운 %s – 대운 %s" % (sb, cb)})
+            for g in SAMHAP:
+                if sb in g and cb in g and all(c in nat_br or c in (sb, cb) for c in g) \
+                        and not all(c in nat_br or c == sb for c in g) and not all(c in nat_br or c == cb for c in g):
+                    src = ["세운 " + sb, "대운 " + cb] + ["%s지 %s" % (names[nat_br.index(c)], c) for c in g if c not in (sb, cb)]
+                    wc.append({"type": "삼합 완성(%s국)" % SAMHAP_EL[g], "where": " + ".join(src)})
         seun.append({"year": yy, "ganzhi": gz(idx), "reading": gzk(idx), "korean_age": yy - sd.year + 1,
                      "stem_ten_god": ten_god(dm, idx % 10),
                      "branch_ten_god": ten_god(dm, S.index(HIDDEN[B[idx % 12]][-1])),
-                     "twelve_stage": twelve(dm, idx % 12)})
+                     "twelve_stage": twelve(dm, idx % 12),
+                     "daeun": cur["ganzhi"] if cur else None, "with_chart": wc, "with_daeun": wd})
 
     out = {
         "input": {"date": a.date, "calendar": "음력" + (" 윤달" if a.leap else "") if a.lunar else "양력",
@@ -491,6 +556,8 @@ def main():
         "elements": {EL[i]: counts[i] for i in range(5)},
         "yinyang": {"양": yang, "음": len(pil) * 2 - yang},
         "ten_god_counts": ten_counts,
+        "ten_god_groups": ten_groups,
+        "lunar_leap_month_in_year": ly_leap,
         "void": {"branches": void, "in_chart": void_hit},
         "sinsal": sinsal,
         "relations": rel,
